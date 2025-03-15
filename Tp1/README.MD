@@ -22,7 +22,7 @@ $ java ServidorCentral
 
 $ java Cliente
 
-- Ingresar "c" para conectarse con el servidor del clienta o "h" para el del horoscopo y presionar enter
+- Ingresar "c" para conectarse con el servidor del clima o "h" para el del horoscopo y presionar enter
 
 -Cerrar todo una vez terminado:
 

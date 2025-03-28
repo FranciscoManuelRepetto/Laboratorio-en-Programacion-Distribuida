@@ -19,15 +19,22 @@ public class Cliente {
         BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
         String userInput;
 
-        while ((userInput = stdIn.readLine()) != null) { 
-                    //mientras el cliente escriba algo
-            out.println(userInput); //lo envia al server
-            System.out.println("echo: " + in.readLine()); //cuando vuelve del server lo imprime con el prefijo "echo"
-        }
+        procesarEntradaUsuario(stdIn, out, in);
+
         out.close();
         in.close();
         stdIn.close();
         echoSocket.close();
+    }
+
+
+    private static void procesarEntradaUsuario(BufferedReader stdIn, PrintWriter out, BufferedReader in) throws IOException {
+        String userInput;
+        System.out.println("Ingrese a continuacion mensajes con formato signo-fecha");
+        while ((userInput = stdIn.readLine()) != null) {
+            out.println(userInput);
+            System.out.println("echo: " + in.readLine()); //cuando vuelve del server lo imprime
+        }
     }
 }
 

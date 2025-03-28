@@ -7,10 +7,12 @@ class ServidorCentralHilo extends Thread {
     private PrintWriter outServidorCentral;
     private BufferedReader inServidorCentral;
     private int idSesion;
+    private CacheServerCentral cache;
 
-    public ServidorCentralHilo(Socket socket, int id) {
+    public ServidorCentralHilo(Socket socket, int id,CacheServerCentral cache) {
         this.clientSocket = socket;
         this.idSesion = id;
+        this.cache=cache;
     }
 
     @Override
@@ -36,8 +38,8 @@ public void run() {
             String fecha = partes[1];
 
             // Consultar servidores
-            String respuestaClima = consultarServidor(fecha, "localhost", 20001);
-            String respuestaHoroscopo = consultarServidor(signo, "localhost", 20002);
+            String respuestaClima = consultarMensaje(fecha, "localhost", 20001);
+            String respuestaHoroscopo = consultarMensaje(signo, "localhost", 20002);
 
             // Enviar respuesta combinada al cliente
             outServidorCentral.println("Clima " + respuestaClima + " | Horóscopo " + respuestaHoroscopo);
@@ -63,6 +65,19 @@ private String[] procesarEntrada(String input) {
         return null;
     }
     return new String[]{partes[0].trim(), partes[1].trim()};
+}
+
+private String consultarMensaje(String mensaje, String host, int puerto){
+    //Verifica si el dato esta en la cache y sino le pregunta al servidor
+    String respuesta;
+    respuesta = cache.getConsulta(mensaje);
+    if(respuesta==null){
+        respuesta = consultarServidor(mensaje,host,puerto);
+        cache.putRespuesta(mensaje,respuesta);
+    }else{
+        System.out.println("Pase por la cache!!");
+    }
+    return respuesta;
 }
 
 

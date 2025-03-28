@@ -3,7 +3,13 @@ import java.net.*;
 import java.util.logging.*;
 
 public class ServidorCentral {
+    static private  CacheServerCentral cache;
+
+
     public static void main(String[] args) throws IOException {
+
+        cache = new CacheServerCentral();
+        
         ServerSocket serverSocket = null;
         int idCliente = 0;
 
@@ -16,7 +22,7 @@ public class ServidorCentral {
                 System.out.println("Nuevo cliente conectado: " + idCliente);
                 
                 // Crea un hilo para manejar la comunicación con el cliente
-                new ServidorCentralHilo(clientSocket, idCliente).start();
+                new ServidorCentralHilo(clientSocket, idCliente,cache).start();
                 idCliente++;
             }
         } catch (IOException e) {

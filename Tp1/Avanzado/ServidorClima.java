@@ -8,10 +8,14 @@ public class ServidorClima {
     public static void main(String[] args) {
         ServerSocket serverSocket = null;
         int idCliente = 0;
+
+        //Crea el puerto con el argumento
+        int puerto = Integer.parseInt(args[0]);
         
         try{
-            serverSocket = new ServerSocket(20001);
-            System.out.println("ServidorClima esperando conexiones en el puerto 20001...");
+            //Escucha en un socket
+            serverSocket = new ServerSocket(puerto);
+            System.out.println("ServidorClima esperando conexiones en el puerto "+puerto);
 
             while (true) {
                 Socket clientSocket = serverSocket.accept(); // Acepta nueva conexión
@@ -21,8 +25,10 @@ public class ServidorClima {
                 idCliente++;
             }
         } catch (IOException e) {
-            System.err.println("No se puede escuchar en puerto: 20001.");
+            System.err.println("No se puede escuchar en puerto: "+puerto);
             System.exit(1);
         }
     }
+
+    
 }

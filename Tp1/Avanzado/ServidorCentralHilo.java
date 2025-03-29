@@ -4,15 +4,20 @@ import java.util.logging.*;
 
 class ServidorCentralHilo extends Thread {
     private Socket clientSocket;
+    private CacheServerCentral cache;
+    private int pClima;
+    private int pHoroscopo;
     private PrintWriter outServidorCentral;
     private BufferedReader inServidorCentral;
     private int idSesion;
-    private CacheServerCentral cache;
+    
 
-    public ServidorCentralHilo(Socket socket, int id,CacheServerCentral cache) {
+    public ServidorCentralHilo(Socket socket,int id,CacheServerCentral cache,int pClima,int pHoroscopo) {
         this.clientSocket = socket;
         this.idSesion = id;
         this.cache=cache;
+        this.pClima=pClima;
+        this.pHoroscopo=pHoroscopo;
     }
 
     @Override
@@ -38,8 +43,8 @@ public void run() {
             String fecha = partes[1];
 
             // Consultar servidores
-            String respuestaClima = consultarMensaje(fecha, "localhost", 20001);
-            String respuestaHoroscopo = consultarMensaje(signo, "localhost", 20002);
+            String respuestaClima = consultarMensaje(fecha, "localhost", pClima);
+            String respuestaHoroscopo = consultarMensaje(signo, "localhost", pHoroscopo);
 
             // Enviar respuesta combinada al cliente
             outServidorCentral.println("Clima " + respuestaClima + " | Horóscopo " + respuestaHoroscopo);
@@ -60,6 +65,7 @@ public void run() {
 }
 
 private String[] procesarEntrada(String input) {
+    //Procesa el mensaje y verifica formato
     String[] partes = input.split("-");
     if (partes.length != 2) {
         return null;
@@ -73,15 +79,17 @@ private String consultarMensaje(String mensaje, String host, int puerto){
     respuesta = cache.getConsulta(mensaje);
     if(respuesta==null){
         respuesta = consultarServidor(mensaje,host,puerto);
-        cache.putRespuesta(mensaje,respuesta);
+        cache.nuevaRespuesta(mensaje,respuesta);
     }else{
-        System.out.println("Pase por la cache!!");
+        //Esto unicamente sirve para verificar si se utiliza la cache
+        System.out.println("Parte del mensaje obtenido de la cache");
     }
     return respuesta;
 }
 
 
 private String consultarServidor(String mensaje, String host, int puerto) {
+    //Le manda al servidor el mensaje
     try (Socket socket = new Socket(host, puerto);
          PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
          BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {

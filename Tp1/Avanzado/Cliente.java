@@ -2,11 +2,15 @@ import java.io.*;
 import java.net.*;
 public class Cliente {
     public static void main(String[] args) throws IOException {
+        
+        //Crea la variables que va a utilizar
         Socket echoSocket = null;
         PrintWriter out = null;
         BufferedReader in = null;
+        int puerto = Integer.parseInt(args[0]);
+        
         try {
-            echoSocket = new Socket("localhost", 20000); //Crea un socket en el puerto 200000
+            echoSocket = new Socket("localhost", puerto); //Crea un socket en puerto
             out = new PrintWriter(echoSocket.getOutputStream(), true); // Se crea un PrintWriter para enviar datos al cliente a través del socket.
             in = new BufferedReader(new InputStreamReader(echoSocket.getInputStream())); //Se crea un BufferedReader para leer los datos que el cliente envía al servidor.
         } catch (UnknownHostException e) {

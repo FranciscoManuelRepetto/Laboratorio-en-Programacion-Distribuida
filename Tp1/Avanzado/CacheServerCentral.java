@@ -14,16 +14,16 @@ public class CacheServerCentral {
         String res=null;
         try{
             mutex.acquire();
-            res= consultas.get(consulta); //Si existe retorna la respuesta caso contrario retorna null
+            res= consultas.get(consulta);//Busca la respuesta en el hashmap 
             mutex.release();
         }catch(InterruptedException e){}
         return res;
     }
 
 
-    public void putRespuesta(String consultaKey, String respuestaVal) {
+    public void nuevaRespuesta(String consultaKey, String respuestaVal) {
         try {
-            mutex.acquire(); //Consultas protegido por mutex
+            mutex.acquire(); //Protejemos la concurrencia con Semaforos
             consultas.put(consultaKey, respuestaVal);
             mutex.release();
         }catch(InterruptedException e){}

@@ -46,12 +46,6 @@ class ServidorClimaHilo extends Thread {
             while ((inputLine = in.readLine()) != null) {
                 System.out.println("Cliente " + idSesion + " envió: " + inputLine);
 
-                // Si el cliente envía "salir", se cierra la conexión
-                if (inputLine.equalsIgnoreCase("salir")) {
-                    out.println("Conexión cerrada.");
-                    break;
-                }
-
                 // Enviar la respuesta del clima según la fecha recibida
                 out.println(getClimaNeuquen(inputLine));
             }

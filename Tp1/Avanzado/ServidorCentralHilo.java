@@ -53,10 +53,6 @@ public void run() {
 
             //Unimos la respuesta para el cliente
             outServidorCentral.println("Clima: " + respuestaClima + " | Horóscopo: " + respuestaHoroscopo);
-
-            // Si el usuario escribe "salir", se finaliza la conexión
-            if (inputLine.equalsIgnoreCase("salir"))
-                break;
         }
 
        /*Cerramos conexiones*/

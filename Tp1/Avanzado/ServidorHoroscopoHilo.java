@@ -64,12 +64,6 @@ class ServidorHoroscopoHilo extends Thread {
             // Bucle para recibir y procesar mensajes del cliente
             while ((inputLine = in.readLine()) != null) {
                 System.out.println("Cliente " + idSesion + " envió: " + inputLine);
-               
-                // Si el cliente envía "salir", se cierra la conexión
-                if (inputLine.equalsIgnoreCase("salir")) {
-                    out.println("Conexión cerrada.");
-                    break;
-                }
 
                 // Enviar la respuesta del horoscopo segun el signo indicado
                 out.println(getHoroscopo(inputLine));

@@ -15,21 +15,21 @@ $ javac ServidorPronosticoClima.java
 - Ejecutar los servidores del clima y del horoscopo en diferentes terminales en el mismo directorio (indistinto cual se ejecuta primero):
 
 
-$ java ServidorHoroscopo
+$ java ServidorHoroscopo 20002
 
-$ java ServidorPronosticoClima
+$ java ServidorPronosticoClima 20001
 
 
 
 - Abrir otra terminal en el mismo directorio y ejecutar el servidor central
 
-$ java ServidorCentral
+$ java ServidorCentral 20000 20001 20002
 
 - Abril otra terminal en el mismo directorio y ejecutar el cliente
 
-$ java Cliente
+$ java Cliente 20000
 
-- Ingresar "c" para conectarse con el servidor del clima o "h" para el del horoscopo y presionar enter
+- Ingresar una signo (en minisculas y con tildes) y una fecha (dd/mm/aaaa), con el formato 'signo;fecha'
 
 -Cerrar todo una vez terminado:
 

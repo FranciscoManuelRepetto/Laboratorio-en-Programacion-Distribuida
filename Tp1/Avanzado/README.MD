@@ -4,20 +4,20 @@
 
 - Generar las clases de java:
 
-$ javac Servidor.java
+$ javac ServidorCemtral.java
 
 $ javac Cliente.java
 
 $ javac ServidorHoroscopo.java
 
-$ javac ServidorPronosticoClima.java
+$ javac ServidorClima.java
 
 - Ejecutar los servidores del clima y del horoscopo en diferentes terminales en el mismo directorio (indistinto cual se ejecuta primero):
 
 
 $ java ServidorHoroscopo 20002
 
-$ java ServidorPronosticoClima 20001
+$ java ServidorClima 20001
 
 
 

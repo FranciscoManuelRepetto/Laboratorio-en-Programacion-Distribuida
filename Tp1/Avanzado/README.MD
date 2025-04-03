@@ -4,7 +4,7 @@
 
 - Generar las clases de java:
 
-$ javac ServidorCemtral.java
+$ javac ServidorCentral.java
 
 $ javac Cliente.java
 

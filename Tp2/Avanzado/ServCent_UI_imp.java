@@ -1,14 +1,10 @@
-import java.rmi.server.UnicastRemoteObject;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
+import java.rmi.Naming;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 
 public class ServCent_UI_imp extends UnicastRemoteObject implements ServCent_UI {
-    private CacheServerCentral cache;
-    private int pClima, pHoroscopo;
+    private CacheServerCentral cache; //para la cache
+    private int pClima, pHoroscopo; //para el servidor del clima y del horoscopo
 
     public ServCent_UI_imp(int pClima, int pHoroscopo) throws RemoteException {
         super();
@@ -17,28 +13,63 @@ public class ServCent_UI_imp extends UnicastRemoteObject implements ServCent_UI 
         this.pHoroscopo = pHoroscopo;
     }
 
+    @Override
     public String procesarConsulta(String mensaje) throws RemoteException {
-        // Procesar entrada del cliente
+      //procesar entrada del cliente
         String[] partes = procesarEntrada(mensaje);
         String respuesta;
-        if (partes == null) {
+        
+        if (partes==null) {
             respuesta="Error: Formato incorrecto. Use 'signo;fecha'";
         }
 
-        String signo = partes[0]; //Signo zodiacal
-        String fecha = partes[1]; //Fecha indicada
+        String signo = partes[0]; //parte zodiacal
+        String fecha = partes[1]; //parte clima
 
-        // Consultamos a la caché, o sino a los servidores de clima y horóscopo
-        String respuestaClima = consultarMensaje(fecha, "localhost", pClima);
-        String respuestaHoroscopo = consultarMensaje(signo, "localhost", pHoroscopo);
+        //consultamos primero a la cache si tiene la respuesta a las peticiones
+        String respuestaHoro = cache.getConsulta(signo);
+        String respuestaClima = cache.getConsulta(fecha);
 
-        //Unimos la respuesta para el cliente
-        respuesta="Clima: " + respuestaClima + " | Horóscopo: " + respuestaHoroscopo;
+        //si la cache no tiene la respuesta, vamos al servidor correspondiente
+        if (respuestaHoro == null) {
+            respuestaHoro = consultarServidor(signo, "localhost", pHoroscopo, "ServidorHoroscopo");
+            cache.nuevaRespuesta(signo, respuestaHoro); // Guardamos en caché
+        } else {
+            System.out.println("Horóscopo obtenido desde caché.");
+        }
 
+//se aplica la misma logica con lo del clima
+        if (respuestaClima == null) {
+            respuestaClima = consultarServidor(fecha, "localhost", pClima, "ServidorClima");
+            cache.nuevaRespuesta(fecha, respuestaClima); // Guardamos en caché
+        } else {
+            System.out.println("Clima obtenido desde caché.");
+        }
+
+        respuesta="Horóscopo: " + respuestaHoro + " | Clima: " + respuestaClima;
+        
         return respuesta;
     }
 
-    private String[] procesarEntrada(String input) {
+    
+    private String consultarServidor(String mensaje, String host, int puerto, String nombreServidor) {
+        String respuesta = "Error al conectar con " + nombreServidor;
+        try {
+            if (nombreServidor.equals("ServidorHoroscopo")) {
+                ServidorHoroscopo_UI horoscopo = (ServidorHoroscopo_UI) Naming.lookup("//" + host + ":" + puerto + "/" + nombreServidor);
+                respuesta = horoscopo.getHoroscopo(mensaje);
+            } else if (nombreServidor.equals("ServidorClima")) {
+                ServidorClima_UI clima = (ServidorClima_UI) Naming.lookup("//" + host + ":" + puerto + "/" + nombreServidor);
+                respuesta = clima.getClimaNeuquen(mensaje);
+            }
+        } catch (Exception e) {
+            System.err.println("Error al conectar con " + nombreServidor);
+            e.printStackTrace();
+        }
+        return respuesta;
+    }
+    
+     private String[] procesarEntrada(String input) {
         //Procesa el mensaje y verifica formato
         String[] partes = input.split(";");
         if (partes.length != 2) {
@@ -46,60 +77,5 @@ public class ServCent_UI_imp extends UnicastRemoteObject implements ServCent_UI 
         }
         // Devuelve los valores limpios de espacios en blanco
         return new String[]{partes[0].trim(), partes[1].trim()};
-    }
-
-
-
-
-    /*Metodo para verifica si la consulta ya está en la caché; si no, consulta al servidor correspondiente
-
-    Recibe como parametro
-    mensaje:  el mensaje, que puede ser el signo o la fecha
-    host: La direccion del servidor, normalmente 'localhost'
-    puerto: puerto del servidor con el que debe conectarse en caso de que la pregunta no este en caché
-
-    Devuelve: Un string con la respuesta a la consulta
-    */
-
-    private String consultarMensaje(String mensaje, String host, int puerto){
-        String respuesta;
-        respuesta = cache.getConsulta(mensaje); // Verifica si ya se consultó antes
-        if(respuesta==null){ // Si no está en la caché, consulta al servidor correspondiente
-            respuesta = consultarServidor(mensaje,host,puerto);
-            cache.nuevaRespuesta(mensaje,respuesta); // Guarda la nueva respuesta en caché
-        }else{
-            //Esto unicamente sirve para verificar si se utiliza la cache
-            System.out.println("Parte del mensaje obtenido de la cache");
-        }
-        return respuesta;
-    }
-
-
-
-
-    /*Metodo para con el servidor correspondiente para obtener la respuesta
-
-    Sus parametros son: 
-    - mensaje: el mensaje que enviareamos al servidor
-    - host: la direccion del servidor, es decir, 'localhost'
-    - puerto: el puerto correspondiente del servidor, ya sea el del clima o del horoscopo
-
-    Devuelve: Un string con la respuesta a la consulta
-    */
-
-    private String consultarServidor(String mensaje, String host, int puerto) {
-        String respuesta = null; 
-        try (Socket socket = new Socket(host, puerto);
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
-
-            out.println(mensaje); // Envía el mensaje al servidor
-            respuesta= in.readLine(); // Recibe la respuesta del servidor
-
-        } catch (IOException e) {
-            System.err.println("No se puede conectar con el servidor en " + host + ":" + puerto);
-            respuesta= "Error en el servidor (" + host + ")";
-        }
-        return respuesta;
     }
 }

@@ -3,55 +3,52 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
 public class ServCent_UI_imp extends UnicastRemoteObject implements ServCent_UI {
-    private CacheServerCentral cache; //para la cache
-    private int pClima, pHoroscopo; //para el servidor del clima y del horoscopo
+    private CacheServerCentral cache;
+    private String ipClima, ipHoroscopo;
+    private int pClima, pHoroscopo;
 
-    public ServCent_UI_imp(int pClima, int pHoroscopo) throws RemoteException {
+    public ServCent_UI_imp(String ipClima, int pClima, String ipHoroscopo, int pHoroscopo) throws RemoteException {
         super();
         this.cache = new CacheServerCentral();
+        this.ipClima = ipClima;
         this.pClima = pClima;
+        this.ipHoroscopo = ipHoroscopo;
         this.pHoroscopo = pHoroscopo;
     }
 
     @Override
     public String procesarConsulta(String mensaje) throws RemoteException {
-      //procesar entrada del cliente
         String[] partes = procesarEntrada(mensaje);
         String respuesta;
         
-        if (partes==null) {
-            respuesta="Error: Formato incorrecto. Use 'signo;fecha'";
+        if (partes == null) {
+            respuesta= "Error: Formato incorrecto. Use 'signo;fecha'";
         }
 
-        String signo = partes[0]; //parte zodiacal
-        String fecha = partes[1]; //parte clima
+        String signo = partes[0];
+        String fecha = partes[1];
 
-        //consultamos primero a la cache si tiene la respuesta a las peticiones
         String respuestaHoro = cache.getConsulta(signo);
         String respuestaClima = cache.getConsulta(fecha);
 
-        //si la cache no tiene la respuesta, vamos al servidor correspondiente
         if (respuestaHoro == null) {
-            respuestaHoro = consultarServidor(signo, "localhost", pHoroscopo, "ServidorHoroscopo");
-            cache.nuevaRespuesta(signo, respuestaHoro); // Guardamos en caché
+            respuestaHoro = consultarServidor(signo, ipHoroscopo, pHoroscopo, "ServidorHoroscopo");
+            cache.nuevaRespuesta(signo, respuestaHoro);
         } else {
             System.out.println("Horóscopo obtenido desde caché.");
         }
 
-//se aplica la misma logica con lo del clima
         if (respuestaClima == null) {
-            respuestaClima = consultarServidor(fecha, "localhost", pClima, "ServidorClima");
-            cache.nuevaRespuesta(fecha, respuestaClima); // Guardamos en caché
+            respuestaClima = consultarServidor(fecha, ipClima, pClima, "ServidorClima");
+            cache.nuevaRespuesta(fecha, respuestaClima);
         } else {
             System.out.println("Clima obtenido desde caché.");
         }
 
-        respuesta="Horóscopo: " + respuestaHoro + " | Clima: " + respuestaClima;
-        
+        respuesta = "Horóscopo: " + respuestaHoro + " | Clima: " + respuestaClima;
         return respuesta;
     }
 
-    
     private String consultarServidor(String mensaje, String host, int puerto, String nombreServidor) {
         String respuesta = "Error al conectar con " + nombreServidor;
         try {
@@ -69,13 +66,11 @@ public class ServCent_UI_imp extends UnicastRemoteObject implements ServCent_UI 
         return respuesta;
     }
     
-     private String[] procesarEntrada(String input) {
-        //Procesa el mensaje y verifica formato
+    private String[] procesarEntrada(String input) {
         String[] partes = input.split(";");
         if (partes.length != 2) {
             return null;
         }
-        // Devuelve los valores limpios de espacios en blanco
         return new String[]{partes[0].trim(), partes[1].trim()};
     }
 }

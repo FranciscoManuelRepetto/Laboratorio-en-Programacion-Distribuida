@@ -5,7 +5,7 @@ import java.util.Random;
 import java.rmi.RemoteException;
 
 
-public class ServidorHoroscopo_UI_imp extends UnicastRemoteObject implements ServidorHoroscopo_UI {
+public class ObjetoHoroscopo_UI_imp extends UnicastRemoteObject implements ObjetoHoroscopo_UI {
     
     /*Lista de signos del zodiaco válidos*/
     private static List<String> signos= Arrays.asList(           
@@ -32,7 +32,7 @@ public class ServidorHoroscopo_UI_imp extends UnicastRemoteObject implements Ser
         "Es un buen día para brillar y mostrar tu liderazgo."
     };
 
-    public ServidorHoroscopo_UI_imp() throws RemoteException{
+    public ObjetoHoroscopo_UI_imp() throws RemoteException{
         super();
     }
 

@@ -2,12 +2,12 @@ import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
-public class ServCent_UI_imp extends UnicastRemoteObject implements ServCent_UI {
+public class ObjetoCentral_UI_imp extends UnicastRemoteObject implements ObjetoCentral_UI {
     private CacheServerCentral cache;
     private String ipClima, ipHoroscopo;
     private int pClima, pHoroscopo;
 
-    public ServCent_UI_imp(String ipClima, int pClima, String ipHoroscopo, int pHoroscopo) throws RemoteException {
+    public ObjetoCentral_UI_imp(String ipClima, int pClima, String ipHoroscopo, int pHoroscopo) throws RemoteException {
         super();
         this.cache = new CacheServerCentral();
         this.ipClima = ipClima;
@@ -22,7 +22,7 @@ public class ServCent_UI_imp extends UnicastRemoteObject implements ServCent_UI 
         String respuesta;
         
         if (partes == null) {
-            respuesta= "Error: Formato incorrecto. Use 'signo;fecha'";
+            return "Error: Formato incorrecto. Use 'signo;fecha'"; //se agrega return para que corte con la ejecucion
         }
 
         String signo = partes[0];
@@ -32,14 +32,14 @@ public class ServCent_UI_imp extends UnicastRemoteObject implements ServCent_UI 
         String respuestaClima = cache.getConsulta(fecha);
 
         if (respuestaHoro == null) {
-            respuestaHoro = consultarServidor(signo, ipHoroscopo, pHoroscopo, "ServidorHoroscopo");
+            respuestaHoro = consultarObjeto(signo, ipHoroscopo, pHoroscopo, "ObjetoHoroscopo");
             cache.nuevaRespuesta(signo, respuestaHoro);
         } else {
             System.out.println("Horóscopo obtenido desde caché.");
         }
 
         if (respuestaClima == null) {
-            respuestaClima = consultarServidor(fecha, ipClima, pClima, "ServidorClima");
+            respuestaClima = consultarObjeto(fecha, ipClima, pClima, "ObjetoClima");
             cache.nuevaRespuesta(fecha, respuestaClima);
         } else {
             System.out.println("Clima obtenido desde caché.");
@@ -49,18 +49,18 @@ public class ServCent_UI_imp extends UnicastRemoteObject implements ServCent_UI 
         return respuesta;
     }
 
-    private String consultarServidor(String mensaje, String host, int puerto, String nombreServidor) {
-        String respuesta = "Error al conectar con " + nombreServidor;
+    private String consultarObjeto(String mensaje, String host, int puerto, String nombreObjeto) {
+        String respuesta = "Error al conectar con " + nombreObjeto;
         try {
-            if (nombreServidor.equals("ServidorHoroscopo")) {
-                ServidorHoroscopo_UI horoscopo = (ServidorHoroscopo_UI) Naming.lookup("//" + host + ":" + puerto + "/" + nombreServidor);
+            if (nombreObjeto.equals("ObjetoHoroscopo")) {
+                ObjetoHoroscopo_UI horoscopo = (ObjetoHoroscopo_UI) Naming.lookup("//" + host + ":" + puerto + "/" + nombreObjeto);
                 respuesta = horoscopo.getHoroscopo(mensaje);
-            } else if (nombreServidor.equals("ServidorClima")) {
-                ServidorClima_UI clima = (ServidorClima_UI) Naming.lookup("//" + host + ":" + puerto + "/" + nombreServidor);
+            } else if (nombreObjeto.equals("ObjetoClima")) {
+                ObjetoClima_UI clima = (ObjetoClima_UI) Naming.lookup("//" + host + ":" + puerto + "/" + nombreObjeto);
                 respuesta = clima.getClimaNeuquen(mensaje);
             }
         } catch (Exception e) {
-            System.err.println("Error al conectar con " + nombreServidor);
+            System.err.println("Error al conectar con " + nombreObjeto);
             e.printStackTrace();
         }
         return respuesta;

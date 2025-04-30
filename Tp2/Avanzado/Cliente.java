@@ -9,7 +9,7 @@ public class Cliente {
             String ipServidor = args[0];
             int puerto = Integer.parseInt(args[1]);
 
-            ServCent_UI servidor = (ServCent_UI) Naming.lookup("//" + ipServidor + ":" + puerto + "/ServidorCentral");
+            ObjetoCentral_UI servidor = (ObjetoCentral_UI) Naming.lookup("//" + ipServidor + ":" + puerto + "/ObjetoCentral");
 
             BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
             String userInput;
@@ -21,7 +21,7 @@ public class Cliente {
                     break;
                 }
                 String respuesta = servidor.procesarConsulta(userInput);
-                System.out.println("Respuesta del servidor: " + respuesta);
+                System.out.println(respuesta);
             }
 
         } catch (Exception e) {

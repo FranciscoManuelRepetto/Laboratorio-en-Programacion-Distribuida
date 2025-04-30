@@ -1,7 +1,7 @@
 import java.io.*;
 import java.rmi.Naming;
 
-public class ServidorCentral {
+public class ObjetoCentral {
     public static void main(String[] args) {
         try {
             String ipCentral = args[0];
@@ -15,13 +15,13 @@ public class ServidorCentral {
             System.setProperty("java.rmi.server.hostname", ipCentral);
             java.rmi.registry.LocateRegistry.createRegistry(pCentral);
 
-            // Crear instancia del servidor pasando IP y puerto de Clima y Horóscopo
-            ServCent_UI_imp servidor = new ServCent_UI_imp(ipClima, pClima, ipHoroscopo, pHoroscopo);
+            // Crear instancia del objeto pasando IP y puerto de Clima y Horóscopo
+            ObjetoCentral_UI_imp servidor = new ObjetoCentral_UI_imp(ipClima, pClima, ipHoroscopo, pHoroscopo);
 
             // Registrar en el RMI Registry
-            Naming.rebind("//" + ipCentral + ":" + pCentral + "/ServidorCentral", servidor);
+            Naming.rebind("//" + ipCentral + ":" + pCentral + "/ObjetoCentral", servidor);
 
-            System.out.println("ServidorCentral registrado en RMI Registry en " + ipCentral + ":" + pCentral);
+            System.out.println("ObjetoCentral registrado en RMI Registry en " + ipCentral + ":" + pCentral);
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -1,6 +1,6 @@
 import java.rmi.Naming;
 
-public class ServidorHoroscopo {
+public class ObjetoHoroscopo {
     public static void main(String[] args) {
         String ip = args[0];
         int puerto = Integer.parseInt(args[1]);
@@ -9,10 +9,10 @@ public class ServidorHoroscopo {
             System.setProperty("java.rmi.server.hostname", ip);
             java.rmi.registry.LocateRegistry.createRegistry(puerto);
 
-            ServidorHoroscopo_UI_imp servidorH = new ServidorHoroscopo_UI_imp();
-            Naming.rebind("//" + ip + ":" + puerto + "/ServidorHoroscopo", servidorH);
+            ObjetoHoroscopo_UI_imp servidorH = new ObjetoHoroscopo_UI_imp();
+            Naming.rebind("//" + ip + ":" + puerto + "/ObjetoHoroscopo", servidorH);
 
-            System.out.println("ServidorHoroscopo registrado en RMI Registry en " + ip + " puerto " + puerto);
+            System.out.println("ObjetorHoroscopo registrado en RMI Registry en " + ip + " puerto " + puerto);
         } catch (Exception e) {
             e.printStackTrace();
         }

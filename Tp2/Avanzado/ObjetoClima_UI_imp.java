@@ -2,7 +2,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Random;
 import java.rmi.RemoteException;
 
-public class ServidorClima_UI_imp extends UnicastRemoteObject implements ServidorClima_UI {
+public class ObjetoClima_UI_imp extends UnicastRemoteObject implements ObjetoClima_UI {
 
     /* Lista de posibles condiciones del clima */
     private static String[] climas = {
@@ -14,7 +14,7 @@ public class ServidorClima_UI_imp extends UnicastRemoteObject implements Servido
             "Con probabilidad de granizo"
     };
 
-    public ServidorClima_UI_imp() throws RemoteException {
+    public ObjetoClima_UI_imp() throws RemoteException {
         super();
     }
 
